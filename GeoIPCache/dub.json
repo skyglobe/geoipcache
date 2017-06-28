@@ -1,0 +1,12 @@
+{
+	"name": "geoipcache",
+	"authors": [
+		"Gianfranco Gallizia <skyglobe@skyglobe-studios.it>"
+	],
+	"dependencies": {
+		"vibe-d": "~>0.7.30"
+	},
+	"description": "RESTful API for redis IP Geographic Database",
+	"copyright": "Copyright (C) 2017, Gianfranco Gallizia",
+	"license": "MIT"
+}
