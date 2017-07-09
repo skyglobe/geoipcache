@@ -5,6 +5,7 @@ void main()
 {
     auto router = new URLRouter;
     router.get("/", &hello);
+    router.get("/ipv4/:ip", &getIPv4Info);
 
     //Favicon
     auto faviconSettings = new HTTPFileServerSettings;
@@ -35,4 +36,32 @@ void errorPage(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInf
 void hello(HTTPServerRequest req, HTTPServerResponse res)
 {
     res.writeBody("Hello, World!\n");
+}
+
+
+void getIPv4Info(HTTPServerRequest req, HTTPServerResponse res)
+{
+    string myInput = req.params["ip"];
+    if (isValidIPv4(myInput)) {
+        res.writeBody("Valid IP: " ~ myInput ~ "\n");
+    } else {
+        res.writeBody("Invalid IP: " ~ myInput ~ "\n");
+    }
+
+}
+
+bool isValidIPv4(string input) {
+    import std.regex;
+    bool result = false;
+    auto ipRegex = ctRegex!(`([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])`);
+    auto captured = matchFirst(input, ipRegex);
+    if (!captured.empty) {
+        captured.popFront();
+        while(!captured.empty) {
+            result = (to!int(captured.front) < 256);
+            if (!result) break;
+            captured.popFront();
+        }
+    }
+    return result;
 }
