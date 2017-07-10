@@ -1,8 +1,17 @@
 import vibe.vibe;
 import std.conv;
 
+private struct APIopt {
+    string listeningAddress = "0.0.0.0";
+    ushort listeningPort = cast(ushort)8080u;
+    string redisHost = "redis";
+    ushort redisPort = cast(ushort)6379u;
+}
+
 void main()
 {
+    auto myOpts = new APIopt();
+    auto redisClient = new RedisClient(myOpts.redisHost, cast(ushort)myOpts.redisPort);
     auto router = new URLRouter;
     router.get("/", &hello);
     router.get("/ipv4/:ip", &getIPv4Info);
@@ -17,8 +26,8 @@ void main()
     router.get("/favicon.ico", serveStaticFiles("public/", faviconSettings));
 
     auto settings = new HTTPServerSettings;
-    settings.port = 8080;
-    settings.bindAddresses = ["0.0.0.0"];
+    settings.port = myOpts.listeningPort;
+    settings.bindAddresses = [myOpts.listeningAddress];
     settings.errorPageHandler = toDelegate(&errorPage);
     listenHTTP(settings, router);
 
