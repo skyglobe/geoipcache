@@ -35,6 +35,7 @@ void errorPage(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInf
 
 void hello(HTTPServerRequest req, HTTPServerResponse res)
 {
+    //TODO: write the endpoints here
     res.writeBody("Hello, World!\n");
 }
 
@@ -45,7 +46,7 @@ void getIPv4Info(HTTPServerRequest req, HTTPServerResponse res)
     if (isValidIPv4(myInput)) {
         res.writeBody("Valid IP: " ~ myInput ~ "\n");
     } else {
-        res.writeBody("Invalid IP: " ~ myInput ~ "\n");
+        throw new HTTPStatusException(400, "Invalid IPv4 address");
     }
 
 }
