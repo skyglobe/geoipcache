@@ -29,8 +29,6 @@ IPData whoisIPQuery(string ipquery, string host = IANA_WHOIS)
                     logInfo("No WHOIS server available");
                 }
             } else {
-                logInfo("WHOIS Host: %s", host); //DEBUG
-                logInfo("WHOIS Data: %s", data); //DEBUG
                 auto countryRegex = ctRegex!(`country:\s*(\w+)`, "mi");
                 auto captured = matchFirst(data, countryRegex);
                 if (!captured.empty)
