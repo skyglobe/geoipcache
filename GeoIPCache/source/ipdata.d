@@ -1,4 +1,5 @@
 import std.conv;
+import coords;
 
 public class IPData {
 
@@ -26,10 +27,20 @@ public:
     string CountryCode() { return this.country_code; }
 
     @property
-    string CountryCode(string value) { return this.country_code = value; }
+    string CountryCode(string value)
+    {
+        country_coords ccVal = ccBinSearch(value);
+        if (ccVal.code != "") {
+            this.lon = ccVal.lon;
+            this.lat = ccVal.lat;
+            return this.country_code = value;
+        } else {
+            throw new Exception("Invalid country code.");
+        }
+    }
 
     @property
-    string Coords() { return to!string(this.lon) ~ "," ~ to!string(this.lat); }
+    string Coords() { return to!string(this.lat) ~ "," ~ to!string(this.lon); }
 
     //Converts a dotted decimal string into a integer value
     static long stringToIP(string ips)
