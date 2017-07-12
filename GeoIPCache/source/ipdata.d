@@ -6,6 +6,8 @@ private:
     string ips = "";
     long ipn = -1;
     string country_code = "";
+    double lon = 0.0;
+    double lat = 0.0;
 
 public:
     this(string ip)
@@ -25,6 +27,9 @@ public:
 
     @property
     string CountryCode(string value) { return this.country_code = value; }
+
+    @property
+    string Coords() { return to!string(this.lon) ~ "," ~ to!string(this.lat); }
 
     //Converts a dotted decimal string into a integer value
     static long stringToIP(string ips)
