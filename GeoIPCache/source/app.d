@@ -2,6 +2,7 @@ import vibe.vibe;
 import std.conv;
 import std.regex;
 import ipdata;
+import whoisclient;
 
 private struct APIopt {
     string listeningAddress = "0.0.0.0";
@@ -54,28 +55,11 @@ void hello(HTTPServerRequest req, HTTPServerResponse res)
 void getIPv4Info(HTTPServerRequest req, HTTPServerResponse res)
 {
     string myInput = req.params["ip"];
-    if (isValidIPv4(myInput)) {
-        res.writeBody("Valid IP: " ~ myInput ~ "\n");
-    } else {
-        throw new HTTPStatusException(400, "Invalid IPv4 address");
-    }
-
-}
-
-bool isValidIPv4(string input)
-{
-    bool result = false;
-    auto ipRegex = ctRegex!(`([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])`);
-    auto captured = matchFirst(input, ipRegex);
-    if (!captured.empty) {
-        captured.popFront();
-        while(!captured.empty) {
-            result = (to!int(captured.front) < 256);
-            if (!result) break;
-            captured.popFront();
-        }
-    }
-    return result;
+    auto ipdata = whoisIPQuery(myInput);
+    auto retval = [ "IP" : ipdata.IPstring, "Country" : ipdata.CountryCode, "Coords" : ipdata.Coords];
+    auto retvalJSON = serializeToJson(retval);
+    res.headers["Content-Type"] = "application/json";
+    res.writeBody(retvalJSON.toString());
 }
 
 bool IPrangeToMinMax(string IPrange, out long min, out long max) {

@@ -53,4 +53,23 @@ public:
         }
         return result;
     }
+
+    static bool isValid(string ip)
+    {
+        import std.regex;
+        bool result = false;
+        auto ipRegex = ctRegex!(`([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])`);
+        auto captured = matchFirst(ip, ipRegex);
+        if (!captured.empty) {
+            captured.popFront();
+            while (!captured.empty) {
+                auto v = to!int(captured.front);
+                if (v > 255)
+                    return false;
+                captured.popFront();
+            }
+            result = true;
+        }
+        return result;
+    }
 }
