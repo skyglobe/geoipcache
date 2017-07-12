@@ -56,42 +56,8 @@ void getIPv4Info(HTTPServerRequest req, HTTPServerResponse res)
 {
     string myInput = req.params["ip"];
     auto ipdata = whoisIPQuery(myInput);
-    auto retval = [ "IP" : ipdata.IPstring, "Country" : ipdata.CountryCode, "Coords" : ipdata.Coords];
+    auto retval = [ "IP" : ipdata.IPstring, "CIDR" : ipdata.CIDR, "Country" : ipdata.CountryCode, "Coords" : ipdata.Coords];
     auto retvalJSON = serializeToJson(retval);
     res.headers["Content-Type"] = "application/json";
     res.writeBody(retvalJSON.toString());
-}
-
-bool IPrangeToMinMax(string IPrange, out long min, out long max) {
-    bool result = false;
-    auto ipRRegex = ctRegex!(`([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])/([0-9][0-9]?)`);
-    min = -1L;
-    max = -1L;
-    auto captured = matchFirst(IPrange, ipRRegex);
-    if (!captured.empty) {
-        int bits;
-        try {
-            string ips = captured[1] ~ "." ~ captured[2] ~ "." ~ captured[3] ~ "." ~ captured[4];
-            min = IPData.stringToIP(ips);
-            bits = to!int(captured[5]);
-        } catch(Exception) {
-            min = -1L;
-            max = -1L;
-            return false;
-        }
-        if (bits == 32) {
-            max = min;
-            result = true;
-        } else {
-            if (bits > 32) {
-                min = -1L;
-                max = -1L;
-                return false;
-            }
-            long howMany = 2 ^^ (32 - bits);
-            max = min + howMany;
-            result = true;
-        }
-    }
-    return result;
 }

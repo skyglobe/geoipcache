@@ -33,6 +33,17 @@ IPData whoisIPQuery(string ipquery, string host = IANA_WHOIS)
                 auto captured = matchFirst(data, countryRegex);
                 if (!captured.empty)
                     result.CountryCode = captured[1];
+                auto cidrRegex = ctRegex!(`[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]/[0-9][0-9]?`,"m");
+                captured = matchFirst(data, cidrRegex);
+                if (!captured.empty)
+                    result.CIDR = captured[0];
+                auto cidrMinMaxRegex = ctRegex!(`([0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9])\s*-\s*([0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9])`,"m");
+                captured = matchFirst(data, cidrMinMaxRegex);
+                if (!captured.empty) {
+                    string parsedCIDR = "";
+                    if (IPData.MinMaxToIPrange(captured[1], captured[2], parsedCIDR))
+                        result.CIDR = parsedCIDR;
+                }
             }
         } else {
             logInfo("No WHOIS data available");
