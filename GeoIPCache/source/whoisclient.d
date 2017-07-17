@@ -19,7 +19,7 @@ IPData whoisIPQuery(string ipquery, string host = IANA_WHOIS)
         conn.flush();
         bool dataAvailable = conn.waitForData(seconds(5));
         if (dataAvailable) {
-            auto data = conn.readAllUTF8();
+            auto data = conn.readAllUTF8(true);
             if (host == IANA_WHOIS) {
                 auto referRegex = ctRegex!(`refer:\s*(\w+.*)$`,"m");
                 auto captured = matchFirst(data, referRegex);
