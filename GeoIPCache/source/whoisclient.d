@@ -26,24 +26,19 @@ IPData whoisIPQuery(string ipquery, string host = IANA_WHOIS)
                 if (!captured.empty) {
                     result = whoisIPQuery(ipquery, captured[1]);
                 } else {
-                    logInfo("No WHOIS server available");
+                    logInfo("No WHOIS refer available");
+                    string myCIDR = "";
+                    if (findCIDR(data, myCIDR))
+                        result.CIDR = myCIDR;
                 }
             } else {
                 auto countryRegex = ctRegex!(`country:\s*(\w+)`, "mi");
                 auto captured = matchFirst(data, countryRegex);
                 if (!captured.empty)
                     result.CountryCode = captured[1];
-                auto cidrRegex = ctRegex!(`[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]/[0-9][0-9]?`,"m");
-                captured = matchFirst(data, cidrRegex);
-                if (!captured.empty)
-                    result.CIDR = captured[0];
-                auto cidrMinMaxRegex = ctRegex!(`([0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9])\s*-\s*([0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9])`,"m");
-                captured = matchFirst(data, cidrMinMaxRegex);
-                if (!captured.empty) {
-                    string parsedCIDR = "";
-                    if (IPData.MinMaxToIPrange(captured[1], captured[2], parsedCIDR))
-                        result.CIDR = parsedCIDR;
-                }
+                string myCIDR = "";
+                if (findCIDR(data, myCIDR))
+                    result.CIDR = myCIDR;
             }
         } else {
             logInfo("No WHOIS data available");
@@ -52,5 +47,31 @@ IPData whoisIPQuery(string ipquery, string host = IANA_WHOIS)
         logInfo("WHOIS error: %s", ex.msg);
         throw new HTTPStatusException(503, "Service Unavailable");
     }
+    return result;
+}
+
+private bool findCIDR(string input, out string output)
+{
+    auto cidrRegex = ctRegex!(`[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]/[0-9][0-9]?`,"m");
+    auto cidrMinMaxRegex = ctRegex!(`([0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9])\s*-\s*([0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9])`,"m");
+
+    bool result = false;
+    output = "";
+
+    auto captured = matchFirst(input, cidrRegex);
+    if (!captured.empty) {
+        output = captured[0];
+        result = true;
+    } else {
+        captured = matchFirst(input, cidrMinMaxRegex);
+        if (!captured.empty) {
+            string parsedCIDR = "";
+            if (IPData.MinMaxToIPrange(captured[1], captured[2], parsedCIDR)) {
+                output = parsedCIDR;
+                result = true;
+            }
+        }
+    }
+
     return result;
 }
