@@ -98,6 +98,23 @@ public:
         return result;
     }
 
+    static bool isValidCIDR(string input)
+    {
+        bool result = false;
+        auto cidrRegex = ctRegex!(`([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])/([0-9][0-9]?)`);
+        auto captured = matchFirst(input, cidrRegex);
+        if (!captured.empty) {
+            for (ulong i = 1; i < 5; ++i) {
+                auto v = to!int(captured[i]);
+                if (v > 255)
+                    return false;
+            }
+            auto bits = to!int(captured[5]);
+            return (bits >= 0) && (bits <= 32);
+        }
+        return result;
+    }
+
     static bool IPrangeToMinMax(string IPrange, out long min, out long max)
     {
         bool result = false;
