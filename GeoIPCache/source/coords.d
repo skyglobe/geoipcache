@@ -1,5 +1,6 @@
 import std.range;
 import std.algorithm.comparison;
+import std.exception;
 
 public struct country_coords
 {
@@ -308,6 +309,7 @@ VN, VU, WF, WS, YE, YT, ZA, ZM, ZW
 public country_coords ccBinSearch(string val)
 {
     ulong b = 0, u = COUNTRIES_COORDS.length, m;
+    enforce(val != "");
     --u;
     while (b <= u) {
         m = (b + u) / 2;
