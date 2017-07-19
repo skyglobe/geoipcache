@@ -2,9 +2,27 @@ import vibe.vibe;
 import ipdata;
 import std.exception;
 import std.regex;
+import std.concurrency;
+import core.thread;
+import core.time;
 
 private string IANA_WHOIS = "whois.iana.org";
 private string ARIN_WHOIS = "whois.arin.net";
+
+void whoisLoop(string redisHost, ushort redisPort)
+{
+    import dbconn;
+    auto conn = new DBConnection(redisHost, redisPort);
+    while (true) {
+        auto query = receiveOnly!string();
+        auto data = whoisIPQuery(query);
+        //Save data into Redis
+        if (data.CountryCode != "")
+            conn.setCIDRCountryCode(data.CIDR, data.CountryCode);
+        //Suspend for grace period of 10 seconds.
+        Thread.sleep(dur!("seconds")(10));
+    }
+}
 
 IPData whoisIPQuery(string ipquery, string host = IANA_WHOIS)
 {
