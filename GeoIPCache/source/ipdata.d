@@ -32,7 +32,7 @@ public:
     @property
     string CIDR(string value)
     {
-        auto cidrRegex = ctRegex!(`[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]/[0-9]?[0-9]`);
+        auto cidrRegex = ctRegex!(`^[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]\.[0-2]?[0-9]?[0-9]/[0-9]?[0-9]$`);
         auto captured = matchFirst(value, cidrRegex);
         if (captured.empty)
             throw new Exception("Invalid CIDR");
@@ -83,7 +83,7 @@ public:
     static bool isValid(string ip)
     {
         bool result = false;
-        auto ipRegex = ctRegex!(`([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])`);
+        auto ipRegex = ctRegex!(`^([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])$`);
         auto captured = matchFirst(ip, ipRegex);
         if (!captured.empty) {
             captured.popFront();
@@ -101,7 +101,7 @@ public:
     static bool isValidCIDR(string input)
     {
         bool result = false;
-        auto cidrRegex = ctRegex!(`([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])/([0-9][0-9]?)`);
+        auto cidrRegex = ctRegex!(`^([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])/([0-9][0-9]?)$`);
         auto captured = matchFirst(input, cidrRegex);
         if (!captured.empty) {
             for (ulong i = 1; i < 5; ++i) {
@@ -118,7 +118,7 @@ public:
     static bool IPrangeToMinMax(string IPrange, out long min, out long max)
     {
         bool result = false;
-        auto ipRRegex = ctRegex!(`([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])/([0-9][0-9]?)`);
+        auto ipRRegex = ctRegex!(`^([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])/([0-9][0-9]?)$`);
         min = -1L;
         max = -1L;
         auto captured = matchFirst(IPrange, ipRRegex);
@@ -154,7 +154,7 @@ public:
     {
         import std.format;
         try {
-            auto ipRegex = ctRegex!(`([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])`);
+            auto ipRegex = ctRegex!(`^([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])\.([0-2]?[0-9]?[0-9])$`);
             auto captured = matchFirst(minIP, ipRegex);
             enforce(!captured.empty, new Exception("Invalid IP."));
             captured = matchFirst(maxIP, ipRegex);
