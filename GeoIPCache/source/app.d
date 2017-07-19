@@ -1,6 +1,8 @@
-import vibe.vibe;
+import std.concurrency;
 import std.conv;
 import std.regex;
+import vibe.vibe;
+import dbconn;
 import ipdata;
 import whoisclient;
 
@@ -11,10 +13,14 @@ private struct APIopt {
     ushort redisPort = cast(ushort)6379u;
 }
 
+private DBConnection conn;
+private Tid worker;
+
 void main()
 {
     auto myOpts = new APIopt();
-    auto redisClient = new RedisClient(myOpts.redisHost, cast(ushort)myOpts.redisPort);
+    conn = new DBConnection(myOpts.redisHost, myOpts.redisPort);
+    worker = spawn(&whoisLoop, myOpts.redisHost, myOpts.redisPort);
     auto router = new URLRouter;
     router.get("/", &hello);
     router.get("/ipv4/:ip", &getIPv4Info);
@@ -55,7 +61,15 @@ void hello(HTTPServerRequest req, HTTPServerResponse res)
 void getIPv4Info(HTTPServerRequest req, HTTPServerResponse res)
 {
     string myInput = req.params["ip"];
-    auto ipdata = whoisIPQuery(myInput);
+    enforce(IPData.isValid(myInput), new HTTPStatusException(400, "Invalid IPv4 address"));
+    IPData ipdata;
+    try {
+        ipdata = conn.getIPData(myInput);
+    } catch(IPNotFoundException) {
+        ipdata = whoisIPQuery(myInput);
+        //Send message to worker
+        std.concurrency.send(worker, myInput);
+    }
     auto retval = [ "IP" : ipdata.IPstring, "CIDR" : ipdata.CIDR, "Country" : ipdata.CountryCode, "Coords" : ipdata.Coords];
     auto retvalJSON = serializeToJson(retval);
     res.headers["Content-Type"] = "application/json";
