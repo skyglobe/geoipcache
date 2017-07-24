@@ -1,0 +1,53 @@
+* { box-sizing: border-box; }
+html { font-size: 16px; }
+body { font-size: 1rem; font-family: sans-serif; color: #000000; background-color: #FFFFFF; }
+p { margin-top: 5px; margin-bottom: 5px; margin-left: 0px; margin-right: 0px; padding: 0px; text-align: justify; }
+a { text-decoration: none; color: #000080; border: 0px; }
+a:hover { text-decoration: underline; color: #0040FF; border: 0px; }
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.2rem; }
+h3 { font-size: 1rem; font-weight: bold; text-decoration: underline; }
+strong { font-weight: bold; }
+em { font-style: italic; }
+.header { width: 100%; margin: 0px; border: 0px; padding: 5px; font-size: 1.5rem; color: #FFFFFF; background-color: #000080; overflow: auto; vertical-align: middle; line-height: 2.0; }
+.footer { width: 100%; margin: 0px; margin-top: 10px; border: 0px; padding: 5px; font-size: 0.75rem; color: #FFFFFF; background-color: #000080; overflow: auto; vertical-align: middle; text-align: center; line-height: 2.0; }
+.footer a { text-decoration: none; color: #FFFFFF; border: 0px; }
+.footer a:hover { text-decoration: underline; }
+.row:after { content: ""; clear: both; display: block; }
+[class*="col-"] { float: left; padding: 16px; width: 100%; }
+@media only screen and (max-width: 425px) {
+.col-m-0 {width: 0%;}
+.col-m-1 {width: 8.33%;}
+.col-m-2 {width: 16.66%;}
+.col-m-3 {width: 25%;}
+.col-m-4 {width: 33.33%;}
+.col-m-5 {width: 41.66%;}
+.col-m-6 {width: 50%;}
+.col-m-7 {width: 58.33%;}
+.col-m-8 {width: 66.66%;}
+.col-m-9 {width: 75%;}
+.col-m-10 {width: 83.33%;}
+.col-m-11 {width: 91.66%;}
+.col-m-12 {width: 100%;}
+#logo_img { width: auto; height: 60px; }
+.logoheader { line-height: 64px; }
+}
+@media only screen and (max-width: 768px) {
+.col-1 {width: 8.33%;}
+.col-2 {width: 16.66%;}
+.col-3 {width: 25%;}
+.col-4 {width: 33.33%;}
+.col-5 {width: 41.66%;}
+.col-6 {width: 50%;}
+.col-7 {width: 58.33%;}
+.col-8 {width: 66.66%;}
+.col-9 {width: 75%;}
+.col-10 {width: 83.33%;}
+.col-11 {width: 91.66%;}
+.col-12 {width: 100%;}
+#logo_img { width: auto; height: 80px; }
+.logoheader { line-height: 84px; }
+}
+@media only screen and (min-width: 1200px) {
+body { width: 1200px; margin-left: auto; margin-right: auto; }
+}

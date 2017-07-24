@@ -1,0 +1,31 @@
+doctype html
+head
+    meta(charset='utf-8') 
+    meta(http-equiv='Content-Type', content='text/html; charset=utf-8')
+    meta(name='viewport',content='width=device-width, initial-scale=1.0')
+    title
+        | GeoIPCache: a simple Web API to access IP Geolocation data.
+    link(rel='stylesheet', type='text/css', href='static/style.css')
+body
+    .header
+        | GeoIPCache: a simple Web API to access IP Geolocation data.
+
+    :markdown
+        **Welcome!** If you see this you've reached an installation of
+        GeoIPCache: the easy to use IP geolocation web API.
+
+        GeoIPCache uses [whois](https://en.wikipedia.org/wiki/WHOIS)
+        data to populate a [Redis](https://redis.io) database and
+        exposes scraped data through the following endpoints:
+
+    ul
+        li /ipv4/<em>ip address</em> : search for the provided IP address.
+            | Returns a JSON object containing the following fields:
+            ul
+                li IP: the queried IP address.
+                li CIDR: the CIDR notation of the queried IP subnet.
+                li Country: ISO 3166-1 alpha-2 country code.
+                li Coords: a string containing latitude and longitude separated by a comma (,).
+            | E.G.: <a href="/ipv4/8.8.8.8">/ipv4/8.8.8.8</a>
+    .footer
+        | <a href="https://www.skyglobe-studios.it">Copyright &copy; 2017 Gianfranco Gallizia</a>

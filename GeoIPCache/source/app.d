@@ -22,7 +22,7 @@ void main()
     conn = new DBConnection(myOpts.redisHost, myOpts.redisPort);
     worker = spawn(&whoisLoop, myOpts.redisHost, myOpts.redisPort);
     auto router = new URLRouter;
-    router.get("/", &hello);
+    router.get("/", staticTemplate!"index.dt");
     router.get("/ipv4/:ip", &getIPv4Info);
 
     //Favicon
@@ -33,6 +33,12 @@ void main()
         res.headers["Content-Type"] = "image/vnd.microsoft.icon";
     };
     router.get("/favicon.ico", serveStaticFiles("public/", faviconSettings));
+
+    //Other static files
+    auto staticFilesSettings = new HTTPFileServerSettings;
+    staticFilesSettings .serverPathPrefix = "/static/";
+    staticFilesSettings.options = HTTPFileServerOption.failIfNotFound;
+    router.get("*", serveStaticFiles("public/", staticFilesSettings));
 
     auto settings = new HTTPServerSettings;
     settings.port = myOpts.listeningPort;
@@ -50,13 +56,6 @@ void errorPage(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInf
     res.headers["Content-Type"] = "application/json";
     res.writeBody(retvalJSON.toString());
 }
-
-void hello(HTTPServerRequest req, HTTPServerResponse res)
-{
-    //TODO: write the endpoints here
-    res.writeBody("Hello, World!\n");
-}
-
 
 void getIPv4Info(HTTPServerRequest req, HTTPServerResponse res)
 {
