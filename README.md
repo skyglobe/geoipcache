@@ -40,3 +40,14 @@ install the [dub](https://code.dlang.org) package registry.
 
 After that all you have to do is run the `dub run` command from within
 the GeoIPCache directory to compile and run GeoIPCache.
+
+Commandline options
+-------------------
+
+Other than the default vibe.d commandline options GeoIPCache also
+accepts the following options:
+
+- `-a $ADDRESS` or `--address=$ADDRESS`: binding address (default: 0.0.0.0)
+- `-p $PORT` or `--port=$PORT`: binding port (default: 8080)
+- `--redishost=$HOST`: Redis server hostname or IP address (default: redis)
+- `--redisport=$PORT`: Redis server port (default: 6379)

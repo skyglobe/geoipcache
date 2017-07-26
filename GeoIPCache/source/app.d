@@ -6,21 +6,33 @@ import dbconn;
 import ipdata;
 import whoisclient;
 
-private struct APIopt {
-    string listeningAddress = "0.0.0.0";
-    ushort listeningPort = cast(ushort)8080u;
-    string redisHost = "redis";
-    ushort redisPort = cast(ushort)6379u;
-}
-
 private DBConnection conn;
 private Tid worker;
 
-void main()
+private string listeningAddress;
+private ushort listeningPort;
+private string redisHost;
+private ushort redisPort;
+
+void main(string[] args)
 {
-    auto myOpts = new APIopt();
-    conn = new DBConnection(myOpts.redisHost, myOpts.redisPort);
-    worker = spawn(&whoisLoop, myOpts.redisHost, myOpts.redisPort);
+    //Command line arguments parsing
+    if (!readOption!string("address|a", &listeningAddress, "Listening address (default: 0.0.0.0).")) {
+        listeningAddress = "0.0.0.0";
+    }
+    if (!readOption!ushort("port|p", &listeningPort, "Listening port (default: 8080).")) {
+        listeningPort = cast(ushort)8080u;
+    }
+    if (!readOption!string("redishost", &redisHost, "Redis host (default: redis).")) {
+        redisHost = "redis";
+    }
+    if (!readOption!ushort("redisport", &redisPort, "Redis port (default: 6379).")) {
+        redisPort = cast(ushort)6379u;
+    }
+    if (!finalizeCommandLineOptions())
+        return;
+    conn = new DBConnection(redisHost, redisPort);
+    worker = spawn(&whoisLoop, redisHost, redisPort);
     auto router = new URLRouter;
     router.get("/", staticTemplate!"index.dt");
     router.get("/ipv4/:ip", &getIPv4Info);
@@ -41,8 +53,8 @@ void main()
     router.get("*", serveStaticFiles("public/", staticFilesSettings));
 
     auto settings = new HTTPServerSettings;
-    settings.port = myOpts.listeningPort;
-    settings.bindAddresses = [myOpts.listeningAddress];
+    settings.port = listeningPort;
+    settings.bindAddresses = [listeningAddress];
     settings.errorPageHandler = toDelegate(&errorPage);
     listenHTTP(settings, router);
 
